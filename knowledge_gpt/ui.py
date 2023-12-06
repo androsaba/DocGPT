@@ -51,8 +51,16 @@ def is_open_ai_key_valid(openai_api_key, model: str) -> bool:
         st.error("Please enter your OpenAI API key in the sidebar!")
         return False
     try:
+       
+        openai.api_key = openai_api_key
+        openai.api_base = 'https://pavi-openai-test.openai.azure.com/' # your endpoint should look like the following https://YOUR_RESOURCE_NAME.openai.azure.com/
+        openai.api_type = 'azure'
+        openai.api_version = '2023-07-01-preview' # this might change in the future
+
+        deployment_name='gpt-35-turbo' #This will correspond to the custom name you chose for your deployment when you deployed a model. 
+        
         openai.ChatCompletion.create(
-            model=model,
+            engine=model,
             messages=[{"role": "user", "content": "test"}],
             api_key=openai_api_key,
         )

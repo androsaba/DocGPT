@@ -63,12 +63,12 @@ def embed_files(
         _embeddings = supported_embeddings[embedding](**kwargs)
     else:
         raise NotImplementedError(f"Embedding {embedding} not supported.")
-
+    
     if vector_store in supported_vector_stores:
         _vector_store = supported_vector_stores[vector_store]
     else:
         raise NotImplementedError(f"Vector store {vector_store} not supported.")
-
+    
     return FolderIndex.from_files(
         files=files, embeddings=_embeddings, vector_store=_vector_store
     )

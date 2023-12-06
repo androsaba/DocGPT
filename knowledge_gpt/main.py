@@ -21,7 +21,7 @@ from knowledge_gpt.core.utils import get_llm
 
 EMBEDDING = "openai"
 VECTOR_STORE = "faiss"
-MODEL_LIST = ["gpt-3.5-turbo", "gpt-4"]
+MODEL_LIST = ["gpt-35-turbo", "gpt-4"]
 
 # Uncomment to enable debug mode
 # MODEL_LIST.insert(0, "debug")
@@ -81,6 +81,11 @@ with st.spinner("Indexing document... This may take a while⏳"):
         embedding=EMBEDDING if model != "debug" else "debug",
         vector_store=VECTOR_STORE if model != "debug" else "debug",
         openai_api_key=openai_api_key,
+        deployment="embeddings",
+        model="text-similarity-davinci-001",
+        openai_api_base="'https://pavi-openai-test.openai.azure.com/",
+        openai_api_type="azure",
+        openai_api_version = '2023-05-15'
     )
 
 with st.form(key="qa_form"):

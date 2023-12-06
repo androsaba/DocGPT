@@ -24,7 +24,7 @@ def sidebar():
             or st.session_state.get("OPENAI_API_KEY", ""),
         )
 
-        st.session_state["OPENAI_API_KEY"] = api_key_input
+        st.session_state["OPENAI_API_KEY"] = '4b6728c8dcf348bd8ea9e9cd6dcd3fbb' 
 
         st.markdown("---")
         st.markdown("# About")
