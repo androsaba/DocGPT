@@ -83,7 +83,7 @@ with st.spinner("Indexing document... This may take a while⏳"):
         openai_api_key=openai_api_key,
         deployment="embeddings",
         model="text-similarity-davinci-001",
-        openai_api_base="'https://pavi-openai-test.openai.azure.com/",
+        openai_api_base="'https://pavi-openai-test.openai.azure.com",
         openai_api_type="azure",
         openai_api_version = '2023-05-15'
     )
