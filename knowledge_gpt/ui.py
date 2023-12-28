@@ -60,7 +60,7 @@ def is_open_ai_key_valid(openai_api_key, model: str) -> bool:
         deployment_name='gpt-35-turbo' #This will correspond to the custom name you chose for your deployment when you deployed a model. 
         
         openai.ChatCompletion.create(
-            engine=model,
+            engine=deployment_name,
             messages=[{"role": "user", "content": "test"}],
             api_key=openai_api_key,
         )

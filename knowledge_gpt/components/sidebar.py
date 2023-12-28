@@ -24,20 +24,29 @@ def sidebar():
             or st.session_state.get("OPENAI_API_KEY", ""),
         )
 
+        temperature = st.number_input(
+                            "Randomness",
+                            min_value=0.0,
+                            max_value=1.0,
+                            value=0.0,  # Default value
+                            help="Set the temperature value (between 0 and 1)."
+                        )
+
         st.session_state["OPENAI_API_KEY"] = api_key_input
+        st.session_state["temperature"] = temperature
 
-        st.markdown("---")
-        st.markdown("# About")
-        st.markdown(
-            "📖KnowledgeGPT allows you to ask questions about your "
-            "documents and get accurate answers with instant citations. "
-        )
-        st.markdown(
-            "This tool is a work in progress. "
-            "You can contribute to the project on [GitHub](https://github.com/mmz-001/knowledge_gpt) "  # noqa: E501
-            "with your feedback and suggestions💡"
-        )
-        st.markdown("Made by [mmz_001](https://twitter.com/mm_sasmitha)")
-        st.markdown("---")
+        # st.markdown("---")
+        # st.markdown("# About")
+        # st.markdown(
+        #     "📖KnowledgeGPT allows you to ask questions about your "
+        #     "documents and get accurate answers with instant citations. "
+        # )
+        # st.markdown(
+        #     "This tool is a work in progress. "
+        #     "You can contribute to the project on [GitHub](https://github.com/mmz-001/knowledge_gpt) "  # noqa: E501
+        #     "with your feedback and suggestions💡"
+        # )
+        # st.markdown("Made by [mmz_001](https://twitter.com/mm_sasmitha)")
+        # st.markdown("---")
 
-        faq()
+        # faq()

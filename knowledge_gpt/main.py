@@ -21,13 +21,13 @@ from knowledge_gpt.core.utils import get_llm
 
 EMBEDDING = "openai"
 VECTOR_STORE = "faiss"
-MODEL_LIST = ["gpt-35-turbo", "gpt-4"]
+MODEL_LIST = ["gpt-3.5-turbo", "gpt-4"]
 
 # Uncomment to enable debug mode
 # MODEL_LIST.insert(0, "debug")
 
-st.set_page_config(page_title="KnowledgeGPT", page_icon="📖", layout="wide")
-st.header("📖KnowledgeGPT")
+st.set_page_config(page_title="DocGPT", page_icon="📖", layout="wide")
+st.header("DocGPT")
 
 # Enable caching for expensive functions
 bootstrap_caching()
@@ -35,6 +35,7 @@ bootstrap_caching()
 sidebar()
 
 openai_api_key = st.session_state.get("OPENAI_API_KEY")
+temperature = st.session_state.get("temperature")
 
 
 if not openai_api_key:
@@ -48,6 +49,7 @@ uploaded_file = st.file_uploader(
     "Upload a pdf, docx, or txt file",
     type=["pdf", "docx", "txt"],
     help="Scanned documents are not supported yet!",
+    accept_multiple_files=True
 )
 
 model: str = st.selectbox("Model", options=MODEL_LIST)  # type: ignore
@@ -60,16 +62,24 @@ with st.expander("Advanced Options"):
 if not uploaded_file:
     st.stop()
 
-try:
-    file = read_file(uploaded_file)
-except Exception as e:
-    display_file_read_error(e, file_name=uploaded_file.name)
+chunked_files=[]
+for f in uploaded_file:
+    try:
+        file = read_file(f)
+    except Exception as e:
+        display_file_read_error(e, file_name=f.name)
 
-chunked_file = chunk_file(file, chunk_size=300, chunk_overlap=0)
+    if f.name.lower().endswith(".pdf"):
+        chunk_size=300
+    else:
+        chunk_size=1000    
+    
+    chunked_file = chunk_file(file, chunk_size=chunk_size, chunk_overlap=0)
 
-if not is_file_valid(file):
-    st.stop()
+    if not is_file_valid(file):
+        st.stop()
 
+    chunked_files.append(chunked_file)
 
 if not is_open_ai_key_valid(openai_api_key, model):
     st.stop()
@@ -77,15 +87,16 @@ if not is_open_ai_key_valid(openai_api_key, model):
 
 with st.spinner("Indexing document... This may take a while⏳"):
     folder_index = embed_files(
-        files=[chunked_file],
+        files=chunked_files,
         embedding=EMBEDDING if model != "debug" else "debug",
         vector_store=VECTOR_STORE if model != "debug" else "debug",
         openai_api_key=openai_api_key,
-        deployment="embeddings",
-        model="text-similarity-davinci-001",
-        openai_api_base="'https://pavi-openai-test.openai.azure.com",
+        deployment="text-embedding-ada-002",
+        model='text-embedding-ada-002', #"text-similarity-davinci-001",
+        openai_api_base="https://pavi-openai-test.openai.azure.com",
         openai_api_type="azure",
-        openai_api_version = '2023-05-15'
+        openai_api_version = '2023-07-01-preview',
+        chunk_size=1
     )
 
 with st.form(key="qa_form"):
@@ -105,8 +116,15 @@ if submit:
 
     # Output Columns
     answer_col, sources_col = st.columns(2)
-
-    llm = get_llm(model=model, openai_api_key=openai_api_key, temperature=0)
+    
+    llm = get_llm(model=model,                   
+                  temperature=temperature,             
+                  openai_api_key=openai_api_key,
+                  openai_api_base="https://pavi-openai-test.openai.azure.com",
+                  openai_api_type="azure",
+                  openai_api_version = '2023-07-01-preview',
+                  deployment_name = 'gpt-35-turbo',
+                )
     result = query_folder(
         folder_index=folder_index,
         query=query,
